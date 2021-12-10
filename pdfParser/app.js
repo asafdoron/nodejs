@@ -5,18 +5,52 @@ import fs from 'fs';
 import { Buffer } from 'buffer';
 
 const pdfPath = './pdfParser/sig.pdf';
- 
 
-function readTrailer()
+let pdfBuf = null;
+let pdfLen = 0;
+
+function readPdf()
 {
         
     let fd = fs.openSync(pdfPath, 'r');
 
-    let pdfLen = fs.statSync(pdfPath).size;
+    pdfLen = fs.statSync(pdfPath).size;
 
-    let buffer = Buffer.alloc(1024);
-    fs.readSync(fd, buffer, 0, 1024, pdfLen - 1024);
+    pdfBuf = Buffer.alloc(pdfLen);
+    fs.readSync(fd, pdfBuf, 0, pdfLen, 0);
 
+    fs.close(fd);
+
+    let pdfStr = pdfBuf.toString('utf8');
+
+    console.log(pdfStr);
+    
+}
+
+
+
+
+// function readTrailer()
+// {
+        
+//     let fd = fs.openSync(pdfPath, 'r');
+
+//     let pdfLen = fs.statSync(pdfPath).size;
+
+//     let buffer = Buffer.alloc(1024);
+//     fs.readSync(fd, buffer, 0, 1024, pdfLen - 1024);
+
+//     let trailer = buffer.toString('utf8');
+//     console.log(trailer);
+   
+//     return trailer;
+
+// }
+
+function readTrailer()
+{
+    let buffer = pdfBuf.subarray(pdfLen - 1024);
+    
     let trailer = buffer.toString('utf8');
     console.log(trailer);
    
@@ -109,6 +143,11 @@ function getSize(trailer)
 }
 
 
-// readTrailer();
-await readTrailerAsync();
-console.log('After readTrailerAsync');
+// // readTrailer();
+// await readTrailerAsync();
+// console.log('After readTrailerAsync');
+
+readPdf();
+trailer = readTrailer();
+
+console.log('END');
